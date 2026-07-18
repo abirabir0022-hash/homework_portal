@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>হোমওয়ার্ক জমা দিন</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --chalkboard:#1B4332;
+    --chalkboard-dark:#123024;
+    --paper:#FBF8F1;
+    --paper-line:#E4DCC8;
+    --margin-red:#C1443C;
+    --graphite:#33352F;
+    --marker-yellow:#E8A93B;
+    --success-green:#2F6B4F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Noto Sans Bengali','Baloo Da 2',sans-serif;
+    background:var(--chalkboard);
+    background-image:
+      radial-gradient(circle at 20% 15%, rgba(255,255,255,0.035) 0, transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(255,255,255,0.03) 0, transparent 40%);
+    color:var(--graphite);
+    min-height:100vh;
+    padding:32px 16px 60px;
+  }
+  .eyebrow{
+    text-align:center;
+    color:var(--marker-yellow);
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:0.08em;
+    margin-bottom:6px;
+  }
+  h1{
+    text-align:center;
+    color:#fff;
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:800;
+    font-size:28px;
+    margin:0 0 28px;
+  }
+  .page{
+    max-width:520px;
+    margin:0 auto;
+    background:var(--paper);
+    border-radius:6px;
+    position:relative;
+    padding:36px 28px 32px 44px;
+    box-shadow:0 20px 45px rgba(0,0,0,0.35), 0 2px 0 rgba(0,0,0,0.1);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 37px,
+      var(--paper-line) 38px
+    );
+    background-position: 0 96px;
+  }
+  .page::before{
+    content:"";
+    position:absolute;
+    top:0; bottom:0; left:26px;
+    width:2px;
+    background:var(--margin-red);
+    opacity:0.55;
+  }
+  .page::after{
+    content:"";
+    position:absolute;
+    left:-6px; top:40px;
+    width:12px; height:12px;
+    border-radius:50%;
+    background:var(--chalkboard-dark);
+    box-shadow:
+      -6px 90px 0 var(--chalkboard-dark),
+      -6px 180px 0 var(--chalkboard-dark),
+      -6px 270px 0 var(--chalkboard-dark),
+      -6px 360px 0 var(--chalkboard-dark);
+  }
+  label{
+    display:block;
+    font-weight:600;
+    font-size:15px;
+    margin:20px 0 8px;
+    color:var(--chalkboard);
+  }
+  label .req{ color:var(--margin-red); }
+  input[type=text], input[type=tel], select{
+    width:100%;
+    padding:12px 14px;
+    border:1.5px solid #D8CFB8;
+    border-radius:8px;
+    font-family:'Noto Sans Bengali',sans-serif;
+    font-size:15px;
+    background:#fff;
+    color:var(--graphite);
+  }
+  input:focus, select:focus{
+    outline:none;
+    border-color:var(--chalkboard);
+    box-shadow:0 0 0 3px rgba(27,67,50,0.12);
+  }
+  .file-drop{
+    border:2px dashed #C7BC9E;
+    border-radius:10px;
+    padding:20px;
+    text-align:center;
+    background:#FFFDF8;
+    cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .file-drop.has-file{ border-color:var(--success-green); background:#F3F8F5; }
+  .file-drop input{ display:none; }
+  .file-drop-label{
+    font-size:14px;
+    color:#8a8272;
+  }
+  .file-drop.has-file .file-drop-label{ color:var(--success-green); font-weight:600; }
+  button{
+    width:100%;
+    margin-top:28px;
+    padding:15px;
+    border:none;
+    border-radius:9px;
+    background:var(--chalkboard);
+    color:#fff;
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:700;
+    font-size:17px;
+    cursor:pointer;
+    transition:transform .1s ease, background .15s ease;
+  }
+  button:active{ transform:scale(0.98); }
+  button:disabled{ background:#9AA79E; cursor:not-allowed; }
+  .status{
+    margin-top:18px;
+    text-align:center;
+    font-weight:600;
+    font-size:14.5px;
+    min-height:20px;
+  }
+  .status.ok{ color:var(--success-green); }
+  .status.err{ color:var(--margin-red); }
+  .stamp{
+    display:none;
+    text-align:center;
+    margin-top:14px;
+  }
+  .stamp.show{ display:block; }
+  .stamp-badge{
+    display:inline-block;
+    border:3px solid var(--margin-red);
+    color:var(--margin-red);
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:800;
+    font-size:15px;
+    padding:8px 18px;
+    border-radius:10px;
+    transform:rotate(-6deg);
+    letter-spacing:0.04em;
+  }
+</style>
+</head>
+<body>
+
+<div class="eyebrow">✏️ হোমওয়ার্ক পোর্টাল</div>
+<h1>হোমওয়ার্ক জমা দিন</h1>
+
+<div class="page">
+  <form id="hwForm">
+    <label>ছাত্রের নাম <span class="req">*</span></label>
+    <input type="text" id="studentName" required placeholder="যেমন: রাহুল আহমেদ">
+
+    <label>ক্লাস <span class="req">*</span></label>
+    <input type="text" id="className" required placeholder="যেমন: ক্লাস ৭">
+
+    <label>বিষয় <span class="req">*</span></label>
+    <input type="text" id="subject" required placeholder="যেমন: গণিত">
+
+    <label>হোমওয়ার্কের ছবি / পিডিএফ <span class="req">*</span></label>
+    <label class="file-drop" id="fileDrop">
+      <input type="file" id="fileInput" accept="image/*,.pdf" required>
+      <span class="file-drop-label" id="fileLabel">ফাইল বাছাই করতে ট্যাপ করুন</span>
+    </label>
+
+    <button type="submit" id="submitBtn">জমা দিন</button>
+    <div class="status" id="statusMsg"></div>
+    <div class="stamp" id="stamp"><span class="stamp-badge">✓ জমা সম্পন্ন হয়েছে</span></div>
+  </form>
+</div>
+
+<script>
+  // এখানে Apps Script Web App ডিপ্লয় করার পর যে URL পাবে সেটা বসাও
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqJ_kMsFpY1QWhi_4XANOHqi9MzWnpBldI4uHkpEmkqpjzFNsC8qJ8Vz9Z4WqJpEiWjA/exec";
+
+  const form = document.getElementById('hwForm');
+  const fileInput = document.getElementById('fileInput');
+  const fileDrop = document.getElementById('fileDrop');
+  const fileLabel = document.getElementById('fileLabel');
+  const statusMsg = document.getElementById('statusMsg');
+  const submitBtn = document.getElementById('submitBtn');
+  const stamp = document.getElementById('stamp');
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) {
+      fileDrop.classList.add('has-file');
+      fileLabel.textContent = "✔ " + fileInput.files[0].name;
+    }
+  });
+
+  function fileToBase64(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusMsg.textContent = "";
+    statusMsg.className = "status";
+    stamp.classList.remove('show');
+
+    if (SCRIPT_URL.includes("PASTE_YOUR")) {
+      statusMsg.textContent = "⚠️ প্রথমে SCRIPT_URL বসাতে হবে (কোডের ভেতরে)।";
+      statusMsg.className = "status err";
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "জমা হচ্ছে...";
+
+    try {
+      const file = fileInput.files[0];
+      const base64 = await fileToBase64(file);
+
+      const payload = {
+        action: "submit",
+        studentName: document.getElementById('studentName').value,
+        className: document.getElementById('className').value,
+        subject: document.getElementById('subject').value,
+        fileName: file.name,
+        fileMimeType: file.type,
+        fileData: base64
+      };
+
+      // Content-Type সেট না করলে ব্রাউজার preflight (OPTIONS) পাঠায় না,
+      // যেটা Apps Script Web App সমর্থন করে না — তাই ইচ্ছাকৃতভাবে বাদ দেওয়া হয়েছে
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        statusMsg.textContent = "সফলভাবে জমা হয়েছে! টিচার শীঘ্রই দেখবেন।";
+        statusMsg.className = "status ok";
+        stamp.classList.add('show');
+        form.reset();
+        fileDrop.classList.remove('has-file');
+        fileLabel.textContent = "ফাইল বাছাই করতে ট্যাপ করুন";
+      } else {
+        throw new Error(data.error || "unknown error");
+      }
+    } catch (err) {
+      statusMsg.textContent = "কিছু একটা ভুল হয়েছে, আবার চেষ্টা করো।";
+      statusMsg.className = "status err";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "জমা দিন";
+    }
+  });
+</script>
+</body>
+</html>

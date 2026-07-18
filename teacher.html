@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>টিচার ড্যাশবোর্ড</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --chalkboard:#1B4332;
+    --chalkboard-dark:#123024;
+    --paper:#FBF8F1;
+    --paper-line:#E4DCC8;
+    --margin-red:#C1443C;
+    --graphite:#33352F;
+    --marker-yellow:#E8A93B;
+    --success-green:#2F6B4F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Noto Sans Bengali','Baloo Da 2',sans-serif;
+    background:var(--chalkboard);
+    color:var(--graphite);
+    min-height:100vh;
+    padding:0 0 60px;
+  }
+  header{
+    padding:28px 16px 22px;
+    text-align:center;
+  }
+  header .eyebrow{
+    color:var(--marker-yellow);
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:0.08em;
+    margin-bottom:4px;
+  }
+  header h1{
+    color:#fff;
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:800;
+    font-size:26px;
+    margin:0;
+  }
+  .toolbar{
+    max-width:640px;
+    margin:0 auto 18px;
+    padding:0 16px;
+    display:flex;
+    gap:10px;
+  }
+  .toolbar input{
+    flex:1;
+    padding:11px 14px;
+    border-radius:8px;
+    border:none;
+    font-family:'Noto Sans Bengali',sans-serif;
+    font-size:14.5px;
+  }
+  .toolbar button{
+    padding:11px 16px;
+    border-radius:8px;
+    border:none;
+    background:var(--marker-yellow);
+    color:var(--chalkboard-dark);
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .list{
+    max-width:640px;
+    margin:0 auto;
+    padding:0 16px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+  .empty, .loading{
+    text-align:center;
+    color:#DCE8E1;
+    font-size:15px;
+    padding:40px 20px;
+  }
+  .card{
+    background:var(--paper);
+    border-radius:6px;
+    position:relative;
+    padding:20px 20px 20px 34px;
+    box-shadow:0 12px 28px rgba(0,0,0,0.28);
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:0; bottom:0; left:20px;
+    width:2px;
+    background:var(--margin-red);
+    opacity:0.5;
+  }
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:4px;
+  }
+  .student-name{
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:700;
+    font-size:18px;
+    color:var(--chalkboard);
+  }
+  .meta{
+    font-size:13.5px;
+    color:#7a7362;
+    margin-top:2px;
+  }
+  .badge{
+    font-size:12px;
+    font-weight:600;
+    padding:4px 10px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .badge.pending{ background:#FCEBD9; color:#B5720E; }
+  .badge.done{ background:#E1EFE6; color:var(--success-green); }
+  .file-link{
+    display:inline-block;
+    margin-top:10px;
+    font-size:14px;
+    color:var(--chalkboard);
+    font-weight:600;
+    text-decoration:none;
+    border-bottom:1.5px solid var(--chalkboard);
+  }
+  .fb-existing{
+    margin-top:14px;
+    padding:10px 14px;
+    background:#fff;
+    border-left:3px solid var(--margin-red);
+    border-radius:0 6px 6px 0;
+    font-size:14px;
+    color:var(--margin-red);
+  }
+  textarea{
+    width:100%;
+    margin-top:12px;
+    padding:10px 12px;
+    border:1.5px solid #D8CFB8;
+    border-radius:8px;
+    font-family:'Noto Sans Bengali',sans-serif;
+    font-size:14.5px;
+    resize:vertical;
+    min-height:60px;
+  }
+  textarea:focus{
+    outline:none;
+    border-color:var(--chalkboard);
+  }
+  .fb-btn{
+    margin-top:10px;
+    padding:9px 16px;
+    border:none;
+    border-radius:7px;
+    background:var(--chalkboard);
+    color:#fff;
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .fb-btn:disabled{ background:#9AA79E; }
+  .fb-status{
+    font-size:13px;
+    margin-top:6px;
+    font-weight:600;
+  }
+  .fb-status.ok{ color:var(--success-green); }
+  .fb-status.err{ color:var(--margin-red); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">📋 টিচার প্যানেল</div>
+  <h1>জমা পড়া হোমওয়ার্ক</h1>
+</header>
+
+<div class="toolbar">
+  <input type="text" id="searchBox" placeholder="নাম বা ক্লাস দিয়ে খুঁজুন...">
+  <button id="refreshBtn">রিফ্রেশ</button>
+</div>
+
+<div class="list" id="list">
+  <div class="loading">লোড হচ্ছে...</div>
+</div>
+
+<script>
+  // এখানে Apps Script Web App ডিপ্লয় করার পর যে URL পাবে সেটা বসাও
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqJ_kMsFpY1QWhi_4XANOHqi9MzWnpBldI4uHkpEmkqpjzFNsC8qJ8Vz9Z4WqJpEiWjA/exec";
+
+  const listEl = document.getElementById('list');
+  const searchBox = document.getElementById('searchBox');
+  const refreshBtn = document.getElementById('refreshBtn');
+  let allData = [];
+
+  async function loadData() {
+    listEl.innerHTML = '<div class="loading">লোড হচ্ছে...</div>';
+
+    if (SCRIPT_URL.includes("PASTE_YOUR")) {
+      listEl.innerHTML = '<div class="empty">⚠️ প্রথমে SCRIPT_URL বসাতে হবে (কোডের ভেতরে)।</div>';
+      return;
+    }
+
+    try {
+      const res = await fetch(SCRIPT_URL + "?action=list");
+      allData = await res.json();
+      render(allData);
+    } catch (err) {
+      listEl.innerHTML = '<div class="empty">ডেটা লোড করা যায়নি, রিফ্রেশ করে আবার চেষ্টা করো।</div>';
+    }
+  }
+
+  function render(items) {
+    if (!items.length) {
+      listEl.innerHTML = '<div class="empty">এখনো কোনো হোমওয়ার্ক জমা পড়েনি।</div>';
+      return;
+    }
+
+    listEl.innerHTML = items.map(item => {
+      const isDone = item.status === "ফিডব্যাক দেওয়া হয়েছে";
+      const badge = isDone
+        ? '<span class="badge done">✓ ফিডব্যাক দেওয়া হয়েছে</span>'
+        : '<span class="badge pending">⏳ অপেক্ষমাণ</span>';
+
+      const existingFb = isDone
+        ? `<div class="fb-existing">📝 ${escapeHtml(item.feedback)}</div>`
+        : '';
+
+      const fileLink = item.fileUrl
+        ? `<a class="file-link" href="${item.fileUrl}" target="_blank" rel="noopener">📎 হোমওয়ার্ক ফাইল দেখুন</a>`
+        : '';
+
+      return `
+        <div class="card" data-id="${item.id}">
+          <div class="card-top">
+            <div>
+              <div class="student-name">${escapeHtml(item.studentName)}</div>
+              <div class="meta">${escapeHtml(item.className)} · ${escapeHtml(item.subject)}</div>
+            </div>
+            ${badge}
+          </div>
+          ${fileLink}
+          ${existingFb}
+          <textarea placeholder="এখানে ফিডব্যাক লিখুন..." class="fb-input">${isDone ? '' : ''}</textarea>
+          <br>
+          <button class="fb-btn">${isDone ? 'ফিডব্যাক আপডেট করুন' : 'ফিডব্যাক দিন'}</button>
+          <div class="fb-status"></div>
+        </div>
+      `;
+    }).join('');
+
+    document.querySelectorAll('.card').forEach(card => {
+      const btn = card.querySelector('.fb-btn');
+      btn.addEventListener('click', () => submitFeedback(card));
+    });
+  }
+
+  async function submitFeedback(card) {
+    const id = card.dataset.id;
+    const textarea = card.querySelector('.fb-input');
+    const btn = card.querySelector('.fb-btn');
+    const statusEl = card.querySelector('.fb-status');
+    const feedback = textarea.value.trim();
+
+    if (!feedback) {
+      statusEl.textContent = "ফিডব্যাক লিখো আগে।";
+      statusEl.className = "fb-status err";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "সেভ হচ্ছে...";
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "feedback", id, feedback })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        statusEl.textContent = "✓ ফিডব্যাক সেভ হয়েছে";
+        statusEl.className = "fb-status ok";
+        setTimeout(loadData, 700);
+      } else {
+        throw new Error(data.error || "unknown");
+      }
+    } catch (err) {
+      statusEl.textContent = "সেভ করা যায়নি, আবার চেষ্টা করো।";
+      statusEl.className = "fb-status err";
+      btn.disabled = false;
+      btn.textContent = "ফিডব্যাক দিন";
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str.toString()
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  searchBox.addEventListener('input', () => {
+    const q = searchBox.value.trim().toLowerCase();
+    if (!q) { render(allData); return; }
+    render(allData.filter(item =>
+      (item.studentName || "").toLowerCase().includes(q) ||
+      (item.className || "").toLowerCase().includes(q)
+    ));
+  });
+
+  refreshBtn.addEventListener('click', loadData);
+  loadData();
+</script>
+</body>
+</html>

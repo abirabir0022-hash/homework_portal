@@ -186,6 +186,7 @@
 <header>
   <div class="eyebrow">📋 টিচার প্যানেল</div>
   <h1>জমা পড়া হোমওয়ার্ক</h1>
+  <div id="restrictedNote" style="color:#DCE8E1;font-size:13px;margin-top:6px;"></div>
 </header>
 
 <div class="toolbar">
@@ -206,6 +207,20 @@
   const refreshBtn = document.getElementById('refreshBtn');
   let allData = [];
 
+  // URL এ ?pairs=Class 1:বাংলা,Class 5:ইংরেজি ১ম পত্র এভাবে দিলে শুধু ওই কম্বিনেশনগুলোই দেখাবে
+  // মানে টিচার শুধু "তার ক্লাস + তার বিষয়ের" হোমওয়ার্কই দেখবেন, একই ক্লাসের অন্য বিষয় দেখবেন না
+  const urlParams = new URLSearchParams(window.location.search);
+  const rawPairs = urlParams.get('pairs') || "";
+  const restrictedPairs = rawPairs
+    .split(',')
+    .map(p => p.trim().toLowerCase())
+    .filter(p => p);
+
+  if (restrictedPairs.length) {
+    document.getElementById('restrictedNote').textContent =
+      "শুধু দেখানো হচ্ছে: " + rawPairs;
+  }
+
   async function loadData() {
     listEl.innerHTML = '<div class="loading">লোড হচ্ছে...</div>';
 
@@ -216,7 +231,16 @@
 
     try {
       const res = await fetch(SCRIPT_URL + "?action=list");
-      allData = await res.json();
+      let data = await res.json();
+
+      if (restrictedPairs.length) {
+        data = data.filter(item => {
+          const key = ((item.className || "").trim() + ":" + (item.subject || "").trim()).toLowerCase();
+          return restrictedPairs.includes(key);
+        });
+      }
+
+      allData = data;
       render(allData);
     } catch (err) {
       listEl.innerHTML = '<div class="empty">ডেটা লোড করা যায়নি, রিফ্রেশ করে আবার চেষ্টা করো।</div>';

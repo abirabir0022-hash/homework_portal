@@ -178,10 +178,17 @@
     <input type="text" id="studentName" required placeholder="যেমন: রাহুল আহমেদ">
 
     <label>ক্লাস <span class="req">*</span></label>
-    <input type="text" id="className" required placeholder="যেমন: ক্লাস ৭">
+    <select id="className" required>
+      <option value="">ক্লাস বাছাই করো</option>
+    </select>
 
     <label>বিষয় <span class="req">*</span></label>
-    <input type="text" id="subject" required placeholder="যেমন: গণিত">
+    <select id="subject" required>
+      <option value="">আগে ক্লাস বাছাই করো</option>
+    </select>
+
+    <label>ইমেইল (ফিডব্যাক পাওয়ার জন্য, না দিলেও চলবে)</label>
+    <input type="text" id="studentEmail" placeholder="যেমন: student@gmail.com">
 
     <label>হোমওয়ার্কের ছবি / পিডিএফ <span class="req">*</span></label>
     <label class="file-drop" id="fileDrop">
@@ -195,9 +202,54 @@
   </form>
 </div>
 
+<div style="text-align:center; margin-top:18px;">
+  <a href="my-feedback.html" style="color:#DCE8E1; font-size:14px; text-decoration:underline;">
+    ➡️ আগের হোমওয়ার্কের ফিডব্যাক দেখতে চাও? এখানে ট্যাপ করো
+  </a>
+</div>
+
 <script>
   // এখানে Apps Script Web App ডিপ্লয় করার পর যে URL পাবে সেটা বসাও
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqJ_kMsFpY1QWhi_4XANOHqi9MzWnpBldI4uHkpEmkqpjzFNsC8qJ8Vz9Z4WqJpEiWjA/exec";
+
+  // ============================================================
+  // প্রতিটা ক্লাসে কোন কোন বিষয় আছে — এখানে এডিট করে নিজের
+  // স্কুলের আসল বিষয়গুলো ঠিক করে নাও। বানান এখানে যা লেখা থাকবে,
+  // Teachers Sheet-এও ঠিক এই বানানেই লিখতে হবে (নাহলে ইমেইল যাবে না)।
+  // ============================================================
+  const CLASS_SUBJECTS = {
+    "Class 1": ["বাংলা", "ইংরেজি", "অংক", "ধর্ম শিক্ষা"],
+    "Class 2": ["বাংলা", "ইংরেজি", "অংক", "ধর্ম শিক্ষা"],
+    "Class 3": ["বাংলা", "ইংরেজি", "অংক", "ধর্ম শিক্ষা"],
+    "Class 4": ["বাংলা", "ইংরেজি", "অংক", "বিজ্ঞান", "ধর্ম শিক্ষা"],
+    "Class 5": ["বাংলা", "ইংরেজি", "অংক", "বিজ্ঞান", "ধর্ম শিক্ষা"],
+    "Class 6": ["বাংলা", "ইংরেজি", "অংক", "বিজ্ঞান", "সামাজিক বিজ্ঞান", "ধর্ম শিক্ষা"],
+    "Class 7": ["বাংলা", "ইংলিশ", "অংক", "বিজ্ঞান", "সামাজিক বিজ্ঞান", "আরবি", "ধর্ম শিক্ষা"],
+    "Class 8": ["বাংলা", "ইংলিশ", "অংক", "বিজ্ঞান", "সামাজিক বিজ্ঞান", "আরবি", "ধর্ম শিক্ষা"],
+    "Class 9": ["বাংলা", "ইংরেজি", "অংক", "বিজ্ঞান", "সামাজিক বিজ্ঞান", "ধর্ম শিক্ষা"],
+    "Class 10": ["বাংলা", "ইংরেজি", "অংক", "বিজ্ঞান", "সামাজিক বিজ্ঞান", "ধর্ম শিক্ষা"]
+  };
+
+  const classSelect = document.getElementById('className');
+  const subjectSelect = document.getElementById('subject');
+
+  Object.keys(CLASS_SUBJECTS).forEach(cls => {
+    const opt = document.createElement('option');
+    opt.value = cls;
+    opt.textContent = cls;
+    classSelect.appendChild(opt);
+  });
+
+  classSelect.addEventListener('change', () => {
+    const subjects = CLASS_SUBJECTS[classSelect.value] || [];
+    subjectSelect.innerHTML = '<option value="">বিষয় বাছাই করো</option>';
+    subjects.forEach(sub => {
+      const opt = document.createElement('option');
+      opt.value = sub;
+      opt.textContent = sub;
+      subjectSelect.appendChild(opt);
+    });
+  });
 
   const form = document.getElementById('hwForm');
   const fileInput = document.getElementById('fileInput');
@@ -247,6 +299,7 @@
         studentName: document.getElementById('studentName').value,
         className: document.getElementById('className').value,
         subject: document.getElementById('subject').value,
+        studentEmail: document.getElementById('studentEmail').value,
         fileName: file.name,
         fileMimeType: file.type,
         fileData: base64
@@ -265,6 +318,7 @@
         statusMsg.className = "status ok";
         stamp.classList.add('show');
         form.reset();
+        subjectSelect.innerHTML = '<option value="">আগে ক্লাস বাছাই করো</option>';
         fileDrop.classList.remove('has-file');
         fileLabel.textContent = "ফাইল বাছাই করতে ট্যাপ করুন";
       } else {

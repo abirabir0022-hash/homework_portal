@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>আমার ফিডব্যাক দেখুন</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --chalkboard:#1B4332;
+    --chalkboard-dark:#123024;
+    --paper:#FBF8F1;
+    --paper-line:#E4DCC8;
+    --margin-red:#C1443C;
+    --graphite:#33352F;
+    --marker-yellow:#E8A93B;
+    --success-green:#2F6B4F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Noto Sans Bengali','Baloo Da 2',sans-serif;
+    background:var(--chalkboard);
+    color:var(--graphite);
+    min-height:100vh;
+    padding:32px 16px 60px;
+  }
+  .eyebrow{
+    text-align:center;
+    color:var(--marker-yellow);
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:0.08em;
+    margin-bottom:6px;
+  }
+  h1{
+    text-align:center;
+    color:#fff;
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:800;
+    font-size:26px;
+    margin:0 0 24px;
+  }
+  .searchBox{
+    max-width:480px;
+    margin:0 auto 20px;
+    background:var(--paper);
+    border-radius:10px;
+    padding:20px;
+    box-shadow:0 12px 28px rgba(0,0,0,0.28);
+  }
+  label{
+    display:block;
+    font-weight:600;
+    font-size:14.5px;
+    margin:10px 0 6px;
+    color:var(--chalkboard);
+  }
+  input{
+    width:100%;
+    padding:12px 14px;
+    border:1.5px solid #D8CFB8;
+    border-radius:8px;
+    font-family:'Noto Sans Bengali',sans-serif;
+    font-size:15px;
+  }
+  input:focus{ outline:none; border-color:var(--chalkboard); }
+  button{
+    width:100%;
+    margin-top:16px;
+    padding:13px;
+    border:none;
+    border-radius:9px;
+    background:var(--chalkboard);
+    color:#fff;
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    cursor:pointer;
+  }
+  button:disabled{ background:#9AA79E; }
+  .list{
+    max-width:480px;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .empty, .loading{
+    text-align:center;
+    color:#DCE8E1;
+    font-size:14.5px;
+    padding:20px;
+  }
+  .card{
+    background:var(--paper);
+    border-radius:6px;
+    position:relative;
+    padding:16px 16px 16px 28px;
+    box-shadow:0 10px 22px rgba(0,0,0,0.25);
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:0; bottom:0; left:16px;
+    width:2px;
+    background:var(--margin-red);
+    opacity:0.5;
+  }
+  .subject{
+    font-family:'Baloo Da 2',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    color:var(--chalkboard);
+  }
+  .meta{
+    font-size:12.5px;
+    color:#7a7362;
+    margin-top:2px;
+  }
+  .badge{
+    display:inline-block;
+    margin-top:8px;
+    font-size:12px;
+    font-weight:600;
+    padding:3px 10px;
+    border-radius:20px;
+  }
+  .badge.pending{ background:#FCEBD9; color:#B5720E; }
+  .badge.done{ background:#E1EFE6; color:var(--success-green); }
+  .fb{
+    margin-top:10px;
+    padding:10px 12px;
+    background:#fff;
+    border-left:3px solid var(--margin-red);
+    border-radius:0 6px 6px 0;
+    font-size:14px;
+    color:var(--margin-red);
+  }
+</style>
+</head>
+<body>
+
+<div class="eyebrow">🔍 ফিডব্যাক খুঁজুন</div>
+<h1>আমার ফিডব্যাক দেখুন</h1>
+
+<div class="searchBox">
+  <label>ছাত্রের নাম</label>
+  <input type="text" id="studentName" placeholder="ফর্মে যে নাম দিয়েছিলে সেটা লিখো">
+
+  <label>ক্লাস</label>
+  <input type="text" id="className" placeholder="যেমন: ক্লাস ৭">
+
+  <button id="searchBtn">খুঁজুন</button>
+</div>
+
+<div class="list" id="list"></div>
+
+<script>
+  // এখানে সেই একই Apps Script Web App URL বসাও
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqJ_kMsFpY1QWhi_4XANOHqi9MzWnpBldI4uHkpEmkqpjzFNsC8qJ8Vz9Z4WqJpEiWjA/exec";
+
+  const searchBtn = document.getElementById('searchBtn');
+  const listEl = document.getElementById('list');
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str.toString()
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  searchBtn.addEventListener('click', async () => {
+    const studentName = document.getElementById('studentName').value.trim();
+    const className = document.getElementById('className').value.trim();
+
+    if (!studentName || !className) {
+      listEl.innerHTML = '<div class="empty">নাম এবং ক্লাস দুটোই লিখতে হবে।</div>';
+      return;
+    }
+
+    listEl.innerHTML = '<div class="loading">খোঁজা হচ্ছে...</div>';
+    searchBtn.disabled = true;
+
+    try {
+      const url = SCRIPT_URL + "?action=lookup"
+        + "&studentName=" + encodeURIComponent(studentName)
+        + "&className=" + encodeURIComponent(className);
+      const res = await fetch(url);
+      const data = await res.json();
+      render(data);
+    } catch (err) {
+      listEl.innerHTML = '<div class="empty">খুঁজতে সমস্যা হয়েছে, আবার চেষ্টা করো।</div>';
+    } finally {
+      searchBtn.disabled = false;
+    }
+  });
+
+  function render(items) {
+    if (!items.length) {
+      listEl.innerHTML = '<div class="empty">এই নামে ও ক্লাসে কোনো জমা পাওয়া যায়নি। নাম/ক্লাস ঠিক আছে কিনা চেক করো।</div>';
+      return;
+    }
+
+    listEl.innerHTML = items.map(item => {
+      const isDone = item.status === "ফিডব্যাক দেওয়া হয়েছে";
+      const badge = isDone
+        ? '<span class="badge done">✓ ফিডব্যাক দেওয়া হয়েছে</span>'
+        : '<span class="badge pending">⏳ এখনো ফিডব্যাক আসেনি</span>';
+      const fb = isDone
+        ? `<div class="fb">📝 ${escapeHtml(item.feedback)}</div>`
+        : '';
+
+      return `
+        <div class="card">
+          <div class="subject">${escapeHtml(item.subject)}</div>
+          <div class="meta">${escapeHtml(item.className)}</div>
+          ${badge}
+          ${fb}
+        </div>
+      `;
+    }).join('');
+  }
+</script>
+</body>
+</html>
